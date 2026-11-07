@@ -1,0 +1,30 @@
+<main class="page auth-page">
+  <header class="brand">
+    <div class="logo" aria-hidden="true">ن</div>
+    <h1>ورود به پنل</h1>
+    <p class="muted">شماره موبایل و رمز عبور کسب‌وکار خود را وارد کنید.</p>
+  </header>
+
+  <form class="card form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label class="field">
+      شماره موبایل
+      <input
+        type="tel"
+        inputmode="tel"
+        autocomplete="username"
+        formControlName="phone"
+      />
+    </label>
+
+    <label class="field">
+      رمز عبور
+      <input type="password" autocomplete="current-password" formControlName="password" />
+    </label>
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+      {{ submitting() ? 'در حال ورود…' : 'ورود' }}
+    </button>
+  </form>
+
+  <p class="center">حساب ندارید؟ <a routerLink="/register">ثبت‌نام کسب‌وکار</a></p>
+</main>

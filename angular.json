@@ -12,7 +12,8 @@
         "@schematics/angular:component": {
           "type": "component",
           "style": "scss",
-          "changeDetection": "OnPush"
+          "changeDetection": "OnPush",
+          "skipTests": true
         }
       },
       "root": "",

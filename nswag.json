@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/RicoSuter/NSwag/master/src/NJsonSchema.CodeGeneration/schemas/nswag.schema.json",
+  "seriesVersion": "14.0",
+  "defaultVariables": null,
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "http://localhost:3000/docs-json",
+      "output": null,
+      "newLineBehavior": "Auto"
+    }
+  },
+  "codeGenerators": {
+    "openApiToTypeScriptClient": {
+      "className": "{controller}Client",
+      "moduleName": "",
+      "namespace": "",
+      "typeScriptVersion": 5.0,
+      "template": "Angular",
+      "promiseType": "Promise",
+      "httpClass": "HttpClient",
+      "injectionTokenType": "InjectionToken",
+      "dateTimeType": "string",
+      "nullValue": "Null",
+      "generateClientClasses": true,
+      "generateDtoTypes": true,
+      "providedInRoot": true,
+      "output": "src/app/api/service-proxies.ts"
+    }
+  }
+}
