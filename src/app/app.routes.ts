@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ownerGuard } from './core/guards/owner.guard';
 
 export const routes: Routes = [
   {
@@ -14,5 +15,10 @@ export const routes: Routes = [
   {
     path: 'register',
     loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent)
+  },
+  {
+    path: 'panel',
+    canActivate: [ownerGuard],
+    loadComponent: () => import('./features/panel-shell/panel-shell.component').then((m)=> m.PanelShellComponent)
   }
 ];

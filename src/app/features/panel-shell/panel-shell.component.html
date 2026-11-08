@@ -1,0 +1,13 @@
+<header class="topbar">
+  <span class="brand">نوبتیفای</span>
+  <button type="button" class="logout" (click)="logout()">خروج</button>
+</header>
+
+<router-outlet />
+
+<nav class="bottom-nav" aria-label="بخش‌های پنل">
+  <a routerLink="bookings" routerLinkActive="on">نوبت‌ها</a>
+  <a routerLink="services" routerLinkActive="on">خدمات</a>
+  <a routerLink="hours" routerLinkActive="on">ساعت کاری</a>
+  <a routerLink="profile" routerLinkActive="on">کسب‌وکار</a>
+</nav>

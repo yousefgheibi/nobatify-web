@@ -3,7 +3,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthControllerClient, LoginDto } from '../../../api/service-proxies';
 import { SessionService } from '../../../core/services/session.service';
-import { NotificationService } from '../../../core/services/notification.service';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 
 @Component({
@@ -17,7 +16,6 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthControllerClient);
   private readonly session = inject(SessionService);
-  private readonly notification = inject(NotificationService);
   private readonly router = inject(Router);
 
   protected readonly submitting = signal(false);
@@ -40,7 +38,6 @@ export class LoginComponent {
       },
       error: (err) => {
         this.submitting.set(false);
-        this.notification.showError(err.message);
       }
     });
   }
