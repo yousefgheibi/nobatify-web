@@ -1,32 +1,39 @@
-@import url('../public/styles/bootstrap.min.css');
+@import url('../public/styles/typography.scss');
+@import url('../public/styles/bootstrap.css');
+@import url('../public/styles/bootstrap-override.scss');
 @import 'ngx-toastr/toastr';
 
 
 :root {
-  --c-primary: #0f766e;
-  --c-primary-soft: #f0fdfa;
+  --primary-color: #0f766e;
+  --primary-color-soft: #f0fdfa;
   --c-text: #0f172a;
   --c-muted: #64748b;
   --c-border: #e2e8f0;
   --c-bg: #f8fafc;
-  --c-surface: #ffffff;
-  --c-danger: #b91c1c;
-  --c-danger-soft: #fef2f2;
-  --c-warning: #92400e;
-  --c-warning-soft: #fef3c7;
-  --c-success: #166534;
-  --c-success-soft: #dcfce7;
-  --radius: 14px;
-  --tap: 48px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+
+  --bs-primary: #0f766e;
+  --bs-primary-rgb: 15, 118, 110;
+
+  --bs-primary-text-emphasis: #0a4f4a;
+  --bs-primary-bg-subtle: #f0fdfa;
+  --bs-primary-border-subtle: #99f6e4;
+
+  --bs-link-color: #0f766e;
+  --bs-link-color-rgb: 15, 118, 110;
+  --bs-link-hover-color: #0a4f4a;
+  --bs-link-hover-color-rgb: 10, 79, 74;
+
+  --bs-focus-ring-color: rgba(15, 118, 110, 0.25);
+
+  --transition: all 300ms ease;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   min-height: 100%;
   background: var(--c-bg);
@@ -35,45 +42,10 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-}
+body { -webkit-font-smoothing: antialiased; }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
-  color: inherit;
-}
 
-// 16px prevents iOS from zooming when an input is focused.
-input,
-select,
-textarea {
-  font-size: 16px;
-}
-
-button {
-  cursor: pointer;
-  min-height: var(--tap);
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-a {
-  color: var(--c-primary);
-}
-
-h1,
-h2,
-h3 {
-  margin: 0;
-  font-weight: 700;
-}
+a { color: var(--c-primary); }
 
 .page {
   width: 100%;
@@ -83,96 +55,4 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.card {
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: var(--tap);
-  padding: 12px 18px;
-  border-radius: 12px;
-  border: 1px solid var(--c-border);
-  background: var(--c-surface);
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background: var(--c-primary);
-  border-color: var(--c-primary);
-  color: #fff;
-}
-
-.btn-danger {
-  color: var(--c-danger);
-  border-color: #fecaca;
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  color: #475569;
-
-  input,
-  select,
-  textarea {
-    padding: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    background: #fff;
-    width: 100%;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    outline: 2px solid var(--c-primary);
-    outline-offset: 1px;
-  }
-}
-
-.field-error {
-  color: var(--c-danger);
-  font-size: 13px;
-}
-
-.muted {
-  color: var(--c-muted);
-  font-size: 13px;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.grow {
-  flex: 1;
-  min-width: 0;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
 }
