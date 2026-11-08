@@ -1,0 +1,24 @@
+@if(label()){
+    <label [for]="id()" class="form-label mb-1">{{ label() }}</label>
+    @if (required() || ngControl?.control?.hasError('required')) {
+        <span class="text-danger">*</span>
+    }
+}
+
+<input [id]="id()" 
+       [type]="type()" class="form-control rounded-4" 
+        [placeholder]="placeholder()" 
+        [value]="value()" 
+        [dir]="dir()"
+        [disabled]="disabled()" 
+        [readonly]="readonly()" 
+        [required]="required()"
+        (input)="onInput($event)" 
+        (blur)="onBlur()" />
+
+
+@if (ngControl?.control?.invalid && (ngControl?.control?.dirty || ngControl?.control?.touched)) {
+<div class="invalid-feedback d-block">
+    {{ errorMessage }}
+</div>
+}
