@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthControllerClient, LoginDto } from '../../../api/service-proxies';
-import { SessionService } from '../../../core/session.service';
-import { NotificationService } from '../../../core/notification.service';
+import { SessionService } from '../../../core/services/session.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { InputComponent } from '../../../shared/ui/input/input.component';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, InputComponent],
   selector: 'app-login',
   styleUrl: './login.component.scss',
   templateUrl: './login.component.html',

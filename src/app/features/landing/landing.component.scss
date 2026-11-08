@@ -7,9 +7,9 @@
 
 /* Design tokens: reuse the app's variables when they exist, fall back otherwise */
 .landing {
-  --primary: var(--c-primary, #0f766e);
+  --primary: var(-bs-primary, #0f766e);
   --primary-hover: #0b5f58;
-  --primary-soft: var(--c-primary-soft, #e3f3ef);
+  --primary-soft: var(-bs-primary-soft, #e3f3ef);
   --ink: var(--c-text, #0f1b1a);
   --muted: var(--c-muted, #5d6b68);
   --line: #e2e8e6;

@@ -1,0 +1,62 @@
+<main class="page">
+  <header class="brand">
+    <h1>ثبت‌نام کسب‌وکار</h1>
+    <p class="muted">بعد از ثبت‌نام، صفحه‌ی رزرو اختصاصی شما ساخته می‌شود.</p>
+  </header>
+
+  <form class="card form p-3 rounded-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-input 
+        label="نام کسب‌وکار" 
+        [type]="'text'" 
+        [dir]="'rtl'" 
+        formControlName="businessName" />
+
+    <app-input 
+        label="شهر" 
+        [type]="'text'" 
+        [dir]="'rtl'" 
+        formControlName="city" />
+
+    <app-input 
+        label="آدرس صفحه‌ی رزرو (فقط حروف انگلیسی، عدد و خط تیره)" 
+        [type]="'text'" 
+        [dir]="'ltr'" 
+        formControlName="slug" 
+        placeholder="barber-shop" />
+
+    <app-input 
+        label="نام و نام خانوادگی مدیر" 
+        [type]="'text'" 
+        [dir]="'rtl'" 
+        formControlName="fullName" />
+
+    <app-input 
+        label="شماره موبایل" 
+        [type]="'tel'"
+        [inputMode]="'tel'" 
+        [dir]="'ltr'" 
+        formControlName="phone" />
+
+    <app-input
+      label="رمز عبور"
+      [type]="'password'"
+      [dir]="'ltr'" 
+      formControlName="password" />
+
+      <app-input
+      label="تکرار رمز عبور"
+      [type]="'password'"
+      [dir]="'ltr'" 
+      formControlName="confirmPassword" />
+      
+    <button
+      type="submit"
+      class="btn btn-primary btn-block"
+      [disabled]="form.invalid || submitting()"
+    >
+      {{ submitting() ? 'در حال ثبت…' : 'ثبت‌نام' }}
+    </button>
+  </form>
+
+  <p class="center">قبلاً ثبت‌نام کرده‌اید؟ <a routerLink="/login">ورود</a></p>
+</main>

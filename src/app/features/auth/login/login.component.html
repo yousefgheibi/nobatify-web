@@ -5,24 +5,27 @@
     <p class="muted">شماره موبایل و رمز عبور کسب‌وکار خود را وارد کنید.</p>
   </header>
 
-  <form class="card form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <label class="field">
-      شماره موبایل
-      <input
-        type="tel"
-        inputmode="tel"
-        autocomplete="username"
-        formControlName="phone"
-      />
-    </label>
+  <form class="card form p-3 rounded-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
-    <label class="field">
-      رمز عبور
-      <input type="password" autocomplete="current-password" formControlName="password" />
-    </label>
+    <app-input 
+        label="شماره موبایل" 
+        [type]="'tel'"
+        [inputMode]="'tel'" 
+        [dir]="'ltr'" 
+        formControlName="phone" />
 
-    <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
-      {{ submitting() ? 'در حال ورود…' : 'ورود' }}
+    <app-input
+      label="رمز عبور"
+      [type]="'password'"
+      [dir]="'ltr'" 
+      formControlName="password" />
+
+    <button
+      type="submit"
+      class="btn btn-primary btn-block"
+      [disabled]="form.invalid || submitting()"
+    >
+      {{ submitting() ? 'در حال ثبت…' : 'ثبت‌نام' }}
     </button>
   </form>
 
