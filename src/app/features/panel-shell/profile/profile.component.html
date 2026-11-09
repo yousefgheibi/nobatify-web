@@ -1,0 +1,70 @@
+<main class="page">
+  <h1 class="fs-20">اطلاعات کسب‌وکار</h1>
+
+  <section class="card p-3 rounded-4">
+    <p class="muted mb-2">این لینک را در اینستاگرام و پیام‌رسان‌ها برای مشتری‌ها بفرستید:</p>
+    <p class="url mb-3" dir="ltr">{{ publicUrl() }}</p>
+    <button type="button" class="btn btn-primary btn-block" (click)="copyLink()">
+      {{ copied() ? 'کپی شد ✓' : 'کپی لینک' }}
+    </button>
+  </section>
+
+  <form class="card form p-3 rounded-4" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <app-input
+      label="نام کسب‌وکار"
+      [type]="'text'"
+      [dir]="'rtl'"
+      class="mb-4"
+      formControlName="name" />
+
+    <div class="row g-2">
+      <div class="col-6">
+        <app-input
+          label="شهر"
+          [type]="'text'"
+          [dir]="'rtl'"
+          class="mb-4"
+          formControlName="city" />
+      </div>
+      <div class="col-6">
+        <app-input
+          label="شماره تماس"
+          [type]="'tel'"
+          [inputMode]="'tel'"
+          [dir]="'ltr'"
+          class="mb-4"
+          formControlName="phone" />
+      </div>
+    </div>
+
+    <app-input
+      label="آدرس"
+      [type]="'text'"
+      [dir]="'rtl'"
+      class="mb-4"
+      formControlName="address" />
+
+    <app-input
+      label="توضیحات"
+      [type]="'text'"
+      [dir]="'rtl'"
+      class="mb-4"
+      formControlName="description" />
+
+    <app-input
+      label="آدرس صفحه‌ی رزرو"
+      [type]="'text'"
+      [dir]="'ltr'"
+      class="mb-4"
+      formControlName="slug"
+      placeholder="barber-shop" />
+
+    @if (form.controls.slug.touched && form.controls.slug.invalid) {
+      <span class="field-error">فقط حروف انگلیسی کوچک، عدد و خط تیره (۳ تا ۶۴ حرف)</span>
+    }
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="saving()">
+      {{ saving() ? 'در حال ذخیره…' : 'ذخیره تغییرات' }}
+    </button>
+  </form>
+</main>

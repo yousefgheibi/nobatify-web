@@ -19,6 +19,23 @@ export const routes: Routes = [
   {
     path: 'panel',
     canActivate: [ownerGuard],
-    loadComponent: () => import('./features/panel-shell/panel-shell.component').then((m)=> m.PanelShellComponent)
+    loadComponent: () => import('./features/panel-shell/panel-shell.component').then((m)=> m.PanelShellComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'bookings' },
+      { path: 'bookings',
+        loadComponent: () => import('./features/panel-shell/bookings/bookings.component').then((m) => m.BookingsComponent)
+      },
+      { path: 'hours',
+        loadComponent: () => import('./features/panel-shell/hours/hours.component').then((m) => m.HoursComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/panel-shell/profile/profile.component').then((m) => m.ProfileComponent)
+      }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: 'login'
   }
 ];

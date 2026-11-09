@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthControllerClient, LoginDto } from '../../../api/service-proxies';
 import { SessionService } from '../../../core/services/session.service';
 import { InputComponent } from '../../../shared/ui/input/input.component';
+import { finalize } from 'rxjs';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink, InputComponent],
@@ -31,13 +32,12 @@ export class LoginComponent {
       return;
     }
     this.submitting.set(true);
-    this.auth.login(this.form.getRawValue() as any as LoginDto).subscribe({
+    this.auth.login(this.form.getRawValue() as any as LoginDto)
+    .pipe(finalize(()=> this.submitting.set(false))).subscribe({
       next: (res: any) => {
+        console.log('LOGIN RESPONSE >>>', res);
         this.session.save(res?.token, res?.businessId);
         void this.router.navigateByUrl('/panel/bookings');
-      },
-      error: (err) => {
-        this.submitting.set(false);
       }
     });
   }

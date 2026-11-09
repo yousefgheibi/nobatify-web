@@ -25,7 +25,7 @@ export class AuthControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    register(body: RegisterDto): Observable<void> {
+    register(body: RegisterDto): Observable<RegisterResponseDto> {
         let url_ = this.baseUrl + "/api/v1/auth/register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -37,6 +37,7 @@ export class AuthControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -47,33 +48,36 @@ export class AuthControllerClient {
                 try {
                     return this.processRegister(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<RegisterResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<RegisterResponseDto>;
         }));
     }
 
-    protected processRegister(response: HttpResponseBase): Observable<void> {
+    protected processRegister(response: HttpResponseBase): Observable<RegisterResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
+        if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegisterResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<RegisterResponseDto>(null as any);
     }
 
-    login(body: LoginDto): Observable<void> {
+    login(body: LoginDto): Observable<LoginResponseDto> {
         let url_ = this.baseUrl + "/api/v1/auth/login";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -85,6 +89,7 @@ export class AuthControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -95,14 +100,14 @@ export class AuthControllerClient {
                 try {
                     return this.processLogin(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<LoginResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<LoginResponseDto>;
         }));
     }
 
-    protected processLogin(response: HttpResponseBase): Observable<void> {
+    protected processLogin(response: HttpResponseBase): Observable<LoginResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -111,14 +116,17 @@ export class AuthControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LoginResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<LoginResponseDto>(null as any);
     }
 }
 
@@ -133,7 +141,7 @@ export class BusinessControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getMyBusiness(): Observable<void> {
+    getMyBusiness(): Observable<BusinessResponseDto> {
         let url_ = this.baseUrl + "/api/v1/business";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -141,6 +149,7 @@ export class BusinessControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -151,14 +160,14 @@ export class BusinessControllerClient {
                 try {
                     return this.processGetMyBusiness(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BusinessResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BusinessResponseDto>;
         }));
     }
 
-    protected processGetMyBusiness(response: HttpResponseBase): Observable<void> {
+    protected processGetMyBusiness(response: HttpResponseBase): Observable<BusinessResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -167,17 +176,20 @@ export class BusinessControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BusinessResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BusinessResponseDto>(null as any);
     }
 
-    updateMyBusiness(body: UpdateBusinessDto): Observable<void> {
+    updateMyBusiness(body: UpdateBusinessDto): Observable<BusinessResponseDto> {
         let url_ = this.baseUrl + "/api/v1/business";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -189,6 +201,7 @@ export class BusinessControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -199,14 +212,14 @@ export class BusinessControllerClient {
                 try {
                     return this.processUpdateMyBusiness(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BusinessResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BusinessResponseDto>;
         }));
     }
 
-    protected processUpdateMyBusiness(response: HttpResponseBase): Observable<void> {
+    protected processUpdateMyBusiness(response: HttpResponseBase): Observable<BusinessResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -215,17 +228,20 @@ export class BusinessControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BusinessResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BusinessResponseDto>(null as any);
     }
 
-    getPublicBusiness(slug: string): Observable<void> {
+    getPublicBusiness(slug: string): Observable<PublicBusinessResponseDto> {
         let url_ = this.baseUrl + "/api/v1/public/businesses/{slug}";
         if (slug === undefined || slug === null)
             throw new globalThis.Error("The parameter 'slug' must be defined.");
@@ -236,6 +252,7 @@ export class BusinessControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -246,14 +263,14 @@ export class BusinessControllerClient {
                 try {
                     return this.processGetPublicBusiness(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PublicBusinessResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PublicBusinessResponseDto>;
         }));
     }
 
-    protected processGetPublicBusiness(response: HttpResponseBase): Observable<void> {
+    protected processGetPublicBusiness(response: HttpResponseBase): Observable<PublicBusinessResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -262,14 +279,17 @@ export class BusinessControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PublicBusinessResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<PublicBusinessResponseDto>(null as any);
     }
 }
 
@@ -590,7 +610,7 @@ export class BookingsControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    list(): Observable<void> {
+    list(): Observable<BookingListItemDto[]> {
         let url_ = this.baseUrl + "/api/v1/bookings";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -598,6 +618,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -608,14 +629,14 @@ export class BookingsControllerClient {
                 try {
                     return this.processList(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingListItemDto[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingListItemDto[]>;
         }));
     }
 
-    protected processList(response: HttpResponseBase): Observable<void> {
+    protected processList(response: HttpResponseBase): Observable<BookingListItemDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -624,17 +645,27 @@ export class BookingsControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(BookingListItemDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingListItemDto[]>(null as any) as any;
     }
 
-    getBookingDetails(id: string): Observable<void> {
+    getBookingDetails(id: string): Observable<BookingDetailsDto> {
         let url_ = this.baseUrl + "/api/v1/bookings/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -645,6 +676,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -655,14 +687,14 @@ export class BookingsControllerClient {
                 try {
                     return this.processGetBookingDetails(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingDetailsDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingDetailsDto>;
         }));
     }
 
-    protected processGetBookingDetails(response: HttpResponseBase): Observable<void> {
+    protected processGetBookingDetails(response: HttpResponseBase): Observable<BookingDetailsDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -671,17 +703,20 @@ export class BookingsControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BookingDetailsDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingDetailsDto>(null as any);
     }
 
-    confirm(id: string): Observable<void> {
+    confirm(id: string): Observable<BookingStatusChangeDto> {
         let url_ = this.baseUrl + "/api/v1/bookings/{id}/confirm";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -692,6 +727,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -702,33 +738,36 @@ export class BookingsControllerClient {
                 try {
                     return this.processConfirm(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingStatusChangeDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingStatusChangeDto>;
         }));
     }
 
-    protected processConfirm(response: HttpResponseBase): Observable<void> {
+    protected processConfirm(response: HttpResponseBase): Observable<BookingStatusChangeDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
+        if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BookingStatusChangeDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingStatusChangeDto>(null as any);
     }
 
-    cancel(id: string): Observable<void> {
+    cancel(id: string): Observable<BookingStatusChangeDto> {
         let url_ = this.baseUrl + "/api/v1/bookings/{id}/cancel";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -739,6 +778,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -749,33 +789,36 @@ export class BookingsControllerClient {
                 try {
                     return this.processCancel(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingStatusChangeDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingStatusChangeDto>;
         }));
     }
 
-    protected processCancel(response: HttpResponseBase): Observable<void> {
+    protected processCancel(response: HttpResponseBase): Observable<BookingStatusChangeDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
+        if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BookingStatusChangeDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingStatusChangeDto>(null as any);
     }
 
-    availability(slug: string): Observable<void> {
+    availability(slug: string): Observable<AvailabilityResponseDto> {
         let url_ = this.baseUrl + "/api/v1/public/businesses/{slug}/availability";
         if (slug === undefined || slug === null)
             throw new globalThis.Error("The parameter 'slug' must be defined.");
@@ -786,6 +829,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -796,14 +840,14 @@ export class BookingsControllerClient {
                 try {
                     return this.processAvailability(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<AvailabilityResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<AvailabilityResponseDto>;
         }));
     }
 
-    protected processAvailability(response: HttpResponseBase): Observable<void> {
+    protected processAvailability(response: HttpResponseBase): Observable<AvailabilityResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -812,17 +856,20 @@ export class BookingsControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AvailabilityResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<AvailabilityResponseDto>(null as any);
     }
 
-    request(slug: string, body: BookingRequestDto): Observable<void> {
+    request(slug: string, body: BookingRequestDto): Observable<BookingViewDto> {
         let url_ = this.baseUrl + "/api/v1/public/businesses/{slug}/bookings";
         if (slug === undefined || slug === null)
             throw new globalThis.Error("The parameter 'slug' must be defined.");
@@ -837,6 +884,7 @@ export class BookingsControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -847,33 +895,36 @@ export class BookingsControllerClient {
                 try {
                     return this.processRequest(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingViewDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingViewDto>;
         }));
     }
 
-    protected processRequest(response: HttpResponseBase): Observable<void> {
+    protected processRequest(response: HttpResponseBase): Observable<BookingViewDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
+        if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BookingViewDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingViewDto>(null as any);
     }
 
-    track(trackingCode: string): Observable<void> {
+    track(trackingCode: string): Observable<BookingViewDto> {
         let url_ = this.baseUrl + "/api/v1/public/bookings/{trackingCode}";
         if (trackingCode === undefined || trackingCode === null)
             throw new globalThis.Error("The parameter 'trackingCode' must be defined.");
@@ -884,6 +935,7 @@ export class BookingsControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -894,14 +946,14 @@ export class BookingsControllerClient {
                 try {
                     return this.processTrack(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<BookingViewDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<BookingViewDto>;
         }));
     }
 
-    protected processTrack(response: HttpResponseBase): Observable<void> {
+    protected processTrack(response: HttpResponseBase): Observable<BookingViewDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -910,14 +962,17 @@ export class BookingsControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BookingViewDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf<BookingViewDto>(null as any);
     }
 }
 
@@ -961,6 +1016,58 @@ export class RegisterDto implements IRegisterDto {
 }
 
 export interface IRegisterDto {
+
+    [key: string]: any;
+}
+
+export class RegisterResponseDto implements IRegisterResponseDto {
+    token!: string;
+    businessId!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IRegisterResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.token = _data["token"] !== undefined ? _data["token"] : null as any;
+            this.businessId = _data["businessId"] !== undefined ? _data["businessId"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): RegisterResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegisterResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["token"] = this.token !== undefined ? this.token : null as any;
+        data["businessId"] = this.businessId !== undefined ? this.businessId : null as any;
+        return data;
+    }
+}
+
+export interface IRegisterResponseDto {
+    token: string;
+    businessId: string;
 
     [key: string]: any;
 }
@@ -1009,6 +1116,138 @@ export interface ILoginDto {
     [key: string]: any;
 }
 
+export class LoginResponseDto implements ILoginResponseDto {
+    token!: string;
+    businessId!: string;
+
+    [key: string]: any;
+
+    constructor(data?: ILoginResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.token = _data["token"] !== undefined ? _data["token"] : null as any;
+            this.businessId = _data["businessId"] !== undefined ? _data["businessId"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): LoginResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["token"] = this.token !== undefined ? this.token : null as any;
+        data["businessId"] = this.businessId !== undefined ? this.businessId : null as any;
+        return data;
+    }
+}
+
+export interface ILoginResponseDto {
+    token: string;
+    businessId: string;
+
+    [key: string]: any;
+}
+
+export class BusinessResponseDto implements IBusinessResponseDto {
+    id!: string;
+    name!: string;
+    city?: string;
+    phone?: string;
+    address?: string;
+    description?: string;
+    slug!: string;
+    createdAt!: string;
+    updatedAt!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IBusinessResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.city = _data["city"] !== undefined ? _data["city"] : null as any;
+            this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
+            this.address = _data["address"] !== undefined ? _data["address"] : null as any;
+            this.description = _data["description"] !== undefined ? _data["description"] : null as any;
+            this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
+            this.createdAt = _data["createdAt"] !== undefined ? _data["createdAt"] : null as any;
+            this.updatedAt = _data["updatedAt"] !== undefined ? _data["updatedAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): BusinessResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BusinessResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["city"] = this.city !== undefined ? this.city : null as any;
+        data["phone"] = this.phone !== undefined ? this.phone : null as any;
+        data["address"] = this.address !== undefined ? this.address : null as any;
+        data["description"] = this.description !== undefined ? this.description : null as any;
+        data["slug"] = this.slug !== undefined ? this.slug : null as any;
+        data["createdAt"] = this.createdAt !== undefined ? this.createdAt : null as any;
+        data["updatedAt"] = this.updatedAt !== undefined ? this.updatedAt : null as any;
+        return data;
+    }
+}
+
+export interface IBusinessResponseDto {
+    id: string;
+    name: string;
+    city?: string;
+    phone?: string;
+    address?: string;
+    description?: string;
+    slug: string;
+    createdAt: string;
+    updatedAt: string;
+
+    [key: string]: any;
+}
+
 export class UpdateBusinessDto implements IUpdateBusinessDto {
 
     [key: string]: any;
@@ -1049,6 +1288,74 @@ export class UpdateBusinessDto implements IUpdateBusinessDto {
 }
 
 export interface IUpdateBusinessDto {
+
+    [key: string]: any;
+}
+
+export class PublicBusinessResponseDto implements IPublicBusinessResponseDto {
+    name!: string;
+    city?: string;
+    phone?: string;
+    address?: string;
+    description?: string;
+    slug!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IPublicBusinessResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.city = _data["city"] !== undefined ? _data["city"] : null as any;
+            this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
+            this.address = _data["address"] !== undefined ? _data["address"] : null as any;
+            this.description = _data["description"] !== undefined ? _data["description"] : null as any;
+            this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): PublicBusinessResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PublicBusinessResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["city"] = this.city !== undefined ? this.city : null as any;
+        data["phone"] = this.phone !== undefined ? this.phone : null as any;
+        data["address"] = this.address !== undefined ? this.address : null as any;
+        data["description"] = this.description !== undefined ? this.description : null as any;
+        data["slug"] = this.slug !== undefined ? this.slug : null as any;
+        return data;
+    }
+}
+
+export interface IPublicBusinessResponseDto {
+    name: string;
+    city?: string;
+    phone?: string;
+    address?: string;
+    description?: string;
+    slug: string;
 
     [key: string]: any;
 }
@@ -1185,6 +1492,356 @@ export interface IWorkingHoursDto {
     [key: string]: any;
 }
 
+export class BookingListItemDto implements IBookingListItemDto {
+    id!: string;
+    trackingCode!: string;
+    status!: BookingListItemDtoStatus;
+    customerName!: string;
+    customerPhone!: string;
+    serviceName!: string;
+    priceToman!: number;
+    startsAt!: string;
+    endsAt!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IBookingListItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
+            this.trackingCode = _data["trackingCode"] !== undefined ? _data["trackingCode"] : null as any;
+            this.status = _data["status"] !== undefined ? _data["status"] : null as any;
+            this.customerName = _data["customerName"] !== undefined ? _data["customerName"] : null as any;
+            this.customerPhone = _data["customerPhone"] !== undefined ? _data["customerPhone"] : null as any;
+            this.serviceName = _data["serviceName"] !== undefined ? _data["serviceName"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.startsAt = _data["startsAt"] !== undefined ? _data["startsAt"] : null as any;
+            this.endsAt = _data["endsAt"] !== undefined ? _data["endsAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): BookingListItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookingListItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["trackingCode"] = this.trackingCode !== undefined ? this.trackingCode : null as any;
+        data["status"] = this.status !== undefined ? this.status : null as any;
+        data["customerName"] = this.customerName !== undefined ? this.customerName : null as any;
+        data["customerPhone"] = this.customerPhone !== undefined ? this.customerPhone : null as any;
+        data["serviceName"] = this.serviceName !== undefined ? this.serviceName : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["startsAt"] = this.startsAt !== undefined ? this.startsAt : null as any;
+        data["endsAt"] = this.endsAt !== undefined ? this.endsAt : null as any;
+        return data;
+    }
+}
+
+export interface IBookingListItemDto {
+    id: string;
+    trackingCode: string;
+    status: BookingListItemDtoStatus;
+    customerName: string;
+    customerPhone: string;
+    serviceName: string;
+    priceToman: number;
+    startsAt: string;
+    endsAt: string;
+
+    [key: string]: any;
+}
+
+export class BookingDetailsDto implements IBookingDetailsDto {
+    id!: string;
+    trackingCode!: string;
+    status!: BookingDetailsDtoStatus;
+    businessId!: string;
+    serviceId!: string;
+    customerName!: string;
+    customerPhone!: string;
+    serviceName!: string;
+    priceToman!: number;
+    startsAt!: string;
+    endsAt!: string;
+    createdAt!: string;
+    updatedAt!: string;
+    service?: any;
+
+    [key: string]: any;
+
+    constructor(data?: IBookingDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
+            this.trackingCode = _data["trackingCode"] !== undefined ? _data["trackingCode"] : null as any;
+            this.status = _data["status"] !== undefined ? _data["status"] : null as any;
+            this.businessId = _data["businessId"] !== undefined ? _data["businessId"] : null as any;
+            this.serviceId = _data["serviceId"] !== undefined ? _data["serviceId"] : null as any;
+            this.customerName = _data["customerName"] !== undefined ? _data["customerName"] : null as any;
+            this.customerPhone = _data["customerPhone"] !== undefined ? _data["customerPhone"] : null as any;
+            this.serviceName = _data["serviceName"] !== undefined ? _data["serviceName"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.startsAt = _data["startsAt"] !== undefined ? _data["startsAt"] : null as any;
+            this.endsAt = _data["endsAt"] !== undefined ? _data["endsAt"] : null as any;
+            this.createdAt = _data["createdAt"] !== undefined ? _data["createdAt"] : null as any;
+            this.updatedAt = _data["updatedAt"] !== undefined ? _data["updatedAt"] : null as any;
+            this.service = _data["service"] !== undefined ? _data["service"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): BookingDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookingDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["trackingCode"] = this.trackingCode !== undefined ? this.trackingCode : null as any;
+        data["status"] = this.status !== undefined ? this.status : null as any;
+        data["businessId"] = this.businessId !== undefined ? this.businessId : null as any;
+        data["serviceId"] = this.serviceId !== undefined ? this.serviceId : null as any;
+        data["customerName"] = this.customerName !== undefined ? this.customerName : null as any;
+        data["customerPhone"] = this.customerPhone !== undefined ? this.customerPhone : null as any;
+        data["serviceName"] = this.serviceName !== undefined ? this.serviceName : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["startsAt"] = this.startsAt !== undefined ? this.startsAt : null as any;
+        data["endsAt"] = this.endsAt !== undefined ? this.endsAt : null as any;
+        data["createdAt"] = this.createdAt !== undefined ? this.createdAt : null as any;
+        data["updatedAt"] = this.updatedAt !== undefined ? this.updatedAt : null as any;
+        data["service"] = this.service !== undefined ? this.service : null as any;
+        return data;
+    }
+}
+
+export interface IBookingDetailsDto {
+    id: string;
+    trackingCode: string;
+    status: BookingDetailsDtoStatus;
+    businessId: string;
+    serviceId: string;
+    customerName: string;
+    customerPhone: string;
+    serviceName: string;
+    priceToman: number;
+    startsAt: string;
+    endsAt: string;
+    createdAt: string;
+    updatedAt: string;
+    service?: any;
+
+    [key: string]: any;
+}
+
+export class BookingStatusChangeDto implements IBookingStatusChangeDto {
+    id!: string;
+    status!: BookingStatusChangeDtoStatus;
+
+    [key: string]: any;
+
+    constructor(data?: IBookingStatusChangeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
+            this.status = _data["status"] !== undefined ? _data["status"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): BookingStatusChangeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookingStatusChangeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["status"] = this.status !== undefined ? this.status : null as any;
+        return data;
+    }
+}
+
+export interface IBookingStatusChangeDto {
+    id: string;
+    status: BookingStatusChangeDtoStatus;
+
+    [key: string]: any;
+}
+
+export class AvailabilitySlotDto implements IAvailabilitySlotDto {
+    startsAt!: string;
+    time!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IAvailabilitySlotDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.startsAt = _data["startsAt"] !== undefined ? _data["startsAt"] : null as any;
+            this.time = _data["time"] !== undefined ? _data["time"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): AvailabilitySlotDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AvailabilitySlotDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["startsAt"] = this.startsAt !== undefined ? this.startsAt : null as any;
+        data["time"] = this.time !== undefined ? this.time : null as any;
+        return data;
+    }
+}
+
+export interface IAvailabilitySlotDto {
+    startsAt: string;
+    time: string;
+
+    [key: string]: any;
+}
+
+export class AvailabilityResponseDto implements IAvailabilityResponseDto {
+    date!: string;
+    slots!: AvailabilitySlotDto[];
+
+    [key: string]: any;
+
+    constructor(data?: IAvailabilityResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.slots = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.date = _data["date"] !== undefined ? _data["date"] : null as any;
+            if (Array.isArray(_data["slots"])) {
+                this.slots = [] as any;
+                for (let item of _data["slots"])
+                    this.slots!.push(AvailabilitySlotDto.fromJS(item));
+            }
+            else {
+                this.slots = null as any;
+            }
+        }
+    }
+
+    static fromJS(data: any): AvailabilityResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AvailabilityResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["date"] = this.date !== undefined ? this.date : null as any;
+        if (Array.isArray(this.slots)) {
+            data["slots"] = [];
+            for (let item of this.slots)
+                data["slots"].push(item ? item.toJSON() : null as any);
+        }
+        return data;
+    }
+}
+
+export interface IAvailabilityResponseDto {
+    date: string;
+    slots: AvailabilitySlotDto[];
+
+    [key: string]: any;
+}
+
 export class BookingRequestDto implements IBookingRequestDto {
 
     [key: string]: any;
@@ -1227,6 +1884,102 @@ export class BookingRequestDto implements IBookingRequestDto {
 export interface IBookingRequestDto {
 
     [key: string]: any;
+}
+
+export class BookingViewDto implements IBookingViewDto {
+    trackingCode!: string;
+    status!: BookingViewDtoStatus;
+    businessName!: string;
+    serviceName!: string;
+    priceToman!: number;
+    startsAt!: string;
+    endsAt!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IBookingViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.trackingCode = _data["trackingCode"] !== undefined ? _data["trackingCode"] : null as any;
+            this.status = _data["status"] !== undefined ? _data["status"] : null as any;
+            this.businessName = _data["businessName"] !== undefined ? _data["businessName"] : null as any;
+            this.serviceName = _data["serviceName"] !== undefined ? _data["serviceName"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.startsAt = _data["startsAt"] !== undefined ? _data["startsAt"] : null as any;
+            this.endsAt = _data["endsAt"] !== undefined ? _data["endsAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): BookingViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookingViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["trackingCode"] = this.trackingCode !== undefined ? this.trackingCode : null as any;
+        data["status"] = this.status !== undefined ? this.status : null as any;
+        data["businessName"] = this.businessName !== undefined ? this.businessName : null as any;
+        data["serviceName"] = this.serviceName !== undefined ? this.serviceName : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["startsAt"] = this.startsAt !== undefined ? this.startsAt : null as any;
+        data["endsAt"] = this.endsAt !== undefined ? this.endsAt : null as any;
+        return data;
+    }
+}
+
+export interface IBookingViewDto {
+    trackingCode: string;
+    status: BookingViewDtoStatus;
+    businessName: string;
+    serviceName: string;
+    priceToman: number;
+    startsAt: string;
+    endsAt: string;
+
+    [key: string]: any;
+}
+
+export enum BookingListItemDtoStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
+}
+
+export enum BookingDetailsDtoStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
+}
+
+export enum BookingStatusChangeDtoStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
+}
+
+export enum BookingViewDtoStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
 }
 
 export class SwaggerException extends Error {
