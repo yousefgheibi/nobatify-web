@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 @Injectable()
-export class AuthControllerClient {
+export class AuthControllerService {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -62,19 +62,19 @@ export class AuthControllerClient {
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = RegisterResponseDto.fromJS(resultData200);
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = RegisterResponseDto.fromJS(resultData201);
+            return _observableOf(result201);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<RegisterResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<RegisterResponseDto>;
     }
 
     login(body: LoginDto): Observable<LoginResponseDto> {
@@ -126,12 +126,12 @@ export class AuthControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<LoginResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<LoginResponseDto>;
     }
 }
 
 @Injectable()
-export class BusinessControllerClient {
+export class BusinessControllerService {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -186,7 +186,7 @@ export class BusinessControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BusinessResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<BusinessResponseDto>;
     }
 
     updateMyBusiness(body: UpdateBusinessDto): Observable<BusinessResponseDto> {
@@ -238,7 +238,7 @@ export class BusinessControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BusinessResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<BusinessResponseDto>;
     }
 
     getPublicBusiness(slug: string): Observable<PublicBusinessResponseDto> {
@@ -289,12 +289,12 @@ export class BusinessControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PublicBusinessResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<PublicBusinessResponseDto>;
     }
 }
 
 @Injectable()
-export class ServiceControllerClient {
+export class ServiceControllerService {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -304,7 +304,7 @@ export class ServiceControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    listServices(): Observable<void> {
+    listServices(): Observable<ServiceResponseDto[]> {
         let url_ = this.baseUrl + "/api/v1/services";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -312,6 +312,7 @@ export class ServiceControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -322,14 +323,14 @@ export class ServiceControllerClient {
                 try {
                     return this.processListServices(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<ServiceResponseDto[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<ServiceResponseDto[]>;
         }));
     }
 
-    protected processListServices(response: HttpResponseBase): Observable<void> {
+    protected processListServices(response: HttpResponseBase): Observable<ServiceResponseDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -338,17 +339,27 @@ export class ServiceControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ServiceResponseDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<ServiceResponseDto[]>;
     }
 
-    createService(body: CreateServiceDto): Observable<void> {
+    createService(body: CreateServiceDto): Observable<ServiceResponseDto> {
         let url_ = this.baseUrl + "/api/v1/services";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -360,6 +371,7 @@ export class ServiceControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -370,14 +382,14 @@ export class ServiceControllerClient {
                 try {
                     return this.processCreateService(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<ServiceResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<ServiceResponseDto>;
         }));
     }
 
-    protected processCreateService(response: HttpResponseBase): Observable<void> {
+    protected processCreateService(response: HttpResponseBase): Observable<ServiceResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -386,17 +398,20 @@ export class ServiceControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = ServiceResponseDto.fromJS(resultData201);
+            return _observableOf(result201);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<ServiceResponseDto>;
     }
 
-    updateService(id: string, body: UpdateServiceDto): Observable<void> {
+    updateService(id: string, body: UpdateServiceDto): Observable<ServiceResponseDto> {
         let url_ = this.baseUrl + "/api/v1/services/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -411,6 +426,7 @@ export class ServiceControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -421,14 +437,14 @@ export class ServiceControllerClient {
                 try {
                     return this.processUpdateService(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<ServiceResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<ServiceResponseDto>;
         }));
     }
 
-    protected processUpdateService(response: HttpResponseBase): Observable<void> {
+    protected processUpdateService(response: HttpResponseBase): Observable<ServiceResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -437,17 +453,23 @@ export class ServiceControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ServiceResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<ServiceResponseDto>;
     }
 
-    deactivateService(id: string): Observable<void> {
+    /**
+     * @return خدمت غیرفعال‌شده
+     */
+    deactivateService(id: string): Observable<ServiceResponseDto> {
         let url_ = this.baseUrl + "/api/v1/services/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -458,6 +480,7 @@ export class ServiceControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -468,14 +491,14 @@ export class ServiceControllerClient {
                 try {
                     return this.processDeactivateService(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<ServiceResponseDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<ServiceResponseDto>;
         }));
     }
 
-    protected processDeactivateService(response: HttpResponseBase): Observable<void> {
+    protected processDeactivateService(response: HttpResponseBase): Observable<ServiceResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -484,19 +507,22 @@ export class ServiceControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ServiceResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<ServiceResponseDto>;
     }
 }
 
 @Injectable()
-export class WorkingHoursControllerClient {
+export class WorkingHoursControllerService {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -506,7 +532,10 @@ export class WorkingHoursControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getHours(): Observable<void> {
+    /**
+     * @return ساعات کاری هفته
+     */
+    getHours(): Observable<WorkingHourItemDto[]> {
         let url_ = this.baseUrl + "/api/v1/working-hours";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -514,6 +543,7 @@ export class WorkingHoursControllerClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -524,14 +554,14 @@ export class WorkingHoursControllerClient {
                 try {
                     return this.processGetHours(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<WorkingHourItemDto[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<WorkingHourItemDto[]>;
         }));
     }
 
-    protected processGetHours(response: HttpResponseBase): Observable<void> {
+    protected processGetHours(response: HttpResponseBase): Observable<WorkingHourItemDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -540,17 +570,30 @@ export class WorkingHoursControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(WorkingHourItemDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<WorkingHourItemDto[]>;
     }
 
-    setHours(body: WorkingHoursDto): Observable<void> {
+    /**
+     * @return ساعات کاری ذخیره‌شده
+     */
+    setHours(body: WorkingHoursDto): Observable<WorkingHourItemDto[]> {
         let url_ = this.baseUrl + "/api/v1/working-hours";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -562,6 +605,7 @@ export class WorkingHoursControllerClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -572,14 +616,14 @@ export class WorkingHoursControllerClient {
                 try {
                     return this.processSetHours(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<WorkingHourItemDto[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<WorkingHourItemDto[]>;
         }));
     }
 
-    protected processSetHours(response: HttpResponseBase): Observable<void> {
+    protected processSetHours(response: HttpResponseBase): Observable<WorkingHourItemDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -588,19 +632,29 @@ export class WorkingHoursControllerClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(WorkingHourItemDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(null as any);
+        return _observableOf(null as any) as Observable<WorkingHourItemDto[]>;
     }
 }
 
 @Injectable()
-export class BookingsControllerClient {
+export class BookingsControllerService {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -610,8 +664,20 @@ export class BookingsControllerClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    list(): Observable<BookingListItemDto[]> {
-        let url_ = this.baseUrl + "/api/v1/bookings";
+    /**
+     * @param date (optional) فیلتر بر اساس تاریخ میلادی (YYYY-MM-DD)
+     * @param status (optional) فیلتر بر اساس وضعیت
+     */
+    list(date: string | undefined, status: Status | undefined): Observable<BookingListItemDto[]> {
+        let url_ = this.baseUrl + "/api/v1/bookings?";
+        if (date === null)
+            throw new globalThis.Error("The parameter 'date' cannot be null.");
+        else if (date !== undefined)
+            url_ += "date=" + encodeURIComponent("" + date) + "&";
+        if (status === null)
+            throw new globalThis.Error("The parameter 'status' cannot be null.");
+        else if (status !== undefined)
+            url_ += "status=" + encodeURIComponent("" + status) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -662,7 +728,7 @@ export class BookingsControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingListItemDto[]>(null as any) as any;
+        return _observableOf(null as any) as Observable<BookingListItemDto[]>;
     }
 
     getBookingDetails(id: string): Observable<BookingDetailsDto> {
@@ -713,7 +779,7 @@ export class BookingsControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingDetailsDto>(null as any);
+        return _observableOf(null as any) as Observable<BookingDetailsDto>;
     }
 
     confirm(id: string): Observable<BookingStatusChangeDto> {
@@ -752,19 +818,19 @@ export class BookingsControllerClient {
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BookingStatusChangeDto.fromJS(resultData200);
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = BookingStatusChangeDto.fromJS(resultData201);
+            return _observableOf(result201);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingStatusChangeDto>(null as any);
+        return _observableOf(null as any) as Observable<BookingStatusChangeDto>;
     }
 
     cancel(id: string): Observable<BookingStatusChangeDto> {
@@ -803,26 +869,38 @@ export class BookingsControllerClient {
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BookingStatusChangeDto.fromJS(resultData200);
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = BookingStatusChangeDto.fromJS(resultData201);
+            return _observableOf(result201);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingStatusChangeDto>(null as any);
+        return _observableOf(null as any) as Observable<BookingStatusChangeDto>;
     }
 
-    availability(slug: string): Observable<AvailabilityResponseDto> {
-        let url_ = this.baseUrl + "/api/v1/public/businesses/{slug}/availability";
+    /**
+     * @param serviceId شناسه‌ی خدمت
+     * @param date تاریخ میلادی به وقت تهران (YYYY-MM-DD)
+     */
+    availability(slug: string, serviceId: string, date: string): Observable<AvailabilityResponseDto> {
+        let url_ = this.baseUrl + "/api/v1/public/businesses/{slug}/availability?";
         if (slug === undefined || slug === null)
             throw new globalThis.Error("The parameter 'slug' must be defined.");
         url_ = url_.replace("{slug}", encodeURIComponent("" + slug));
+        if (serviceId === undefined || serviceId === null)
+            throw new globalThis.Error("The parameter 'serviceId' must be defined and cannot be null.");
+        else
+            url_ += "serviceId=" + encodeURIComponent("" + serviceId) + "&";
+        if (date === undefined || date === null)
+            throw new globalThis.Error("The parameter 'date' must be defined and cannot be null.");
+        else
+            url_ += "date=" + encodeURIComponent("" + date) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -866,7 +944,7 @@ export class BookingsControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<AvailabilityResponseDto>(null as any);
+        return _observableOf(null as any) as Observable<AvailabilityResponseDto>;
     }
 
     request(slug: string, body: BookingRequestDto): Observable<BookingViewDto> {
@@ -909,19 +987,19 @@ export class BookingsControllerClient {
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BookingViewDto.fromJS(resultData200);
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = BookingViewDto.fromJS(resultData201);
+            return _observableOf(result201);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingViewDto>(null as any);
+        return _observableOf(null as any) as Observable<BookingViewDto>;
     }
 
     track(trackingCode: string): Observable<BookingViewDto> {
@@ -972,11 +1050,25 @@ export class BookingsControllerClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BookingViewDto>(null as any);
+        return _observableOf(null as any) as Observable<BookingViewDto>;
     }
 }
 
 export class RegisterDto implements IRegisterDto {
+    /** نام کسب‌وکار */
+    businessName!: string;
+    /** دسته‌بندی کسب‌وکار */
+    category!: string;
+    /** شهر */
+    city!: string;
+    /** آدرس صفحه‌ی رزرو */
+    slug!: string;
+    /** شماره موبایل */
+    phone!: string;
+    /** نام و نام خانوادگی صاحب کسب‌وکار */
+    fullName!: string;
+    /** رمز عبور */
+    password!: string;
 
     [key: string]: any;
 
@@ -995,6 +1087,13 @@ export class RegisterDto implements IRegisterDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.businessName = _data["businessName"] !== undefined ? _data["businessName"] : null as any;
+            this.category = _data["category"] !== undefined ? _data["category"] : null as any;
+            this.city = _data["city"] !== undefined ? _data["city"] : null as any;
+            this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
+            this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
+            this.fullName = _data["fullName"] !== undefined ? _data["fullName"] : null as any;
+            this.password = _data["password"] !== undefined ? _data["password"] : null as any;
         }
     }
 
@@ -1011,11 +1110,32 @@ export class RegisterDto implements IRegisterDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["businessName"] = this.businessName !== undefined ? this.businessName : null as any;
+        data["category"] = this.category !== undefined ? this.category : null as any;
+        data["city"] = this.city !== undefined ? this.city : null as any;
+        data["slug"] = this.slug !== undefined ? this.slug : null as any;
+        data["phone"] = this.phone !== undefined ? this.phone : null as any;
+        data["fullName"] = this.fullName !== undefined ? this.fullName : null as any;
+        data["password"] = this.password !== undefined ? this.password : null as any;
         return data;
     }
 }
 
 export interface IRegisterDto {
+    /** نام کسب‌وکار */
+    businessName: string;
+    /** دسته‌بندی کسب‌وکار */
+    category: string;
+    /** شهر */
+    city: string;
+    /** آدرس صفحه‌ی رزرو */
+    slug: string;
+    /** شماره موبایل */
+    phone: string;
+    /** نام و نام خانوادگی صاحب کسب‌وکار */
+    fullName: string;
+    /** رمز عبور */
+    password: string;
 
     [key: string]: any;
 }
@@ -1073,6 +1193,10 @@ export interface IRegisterResponseDto {
 }
 
 export class LoginDto implements ILoginDto {
+    /** شماره موبایل */
+    phone!: string;
+    /** رمز عبور */
+    password!: string;
 
     [key: string]: any;
 
@@ -1091,6 +1215,8 @@ export class LoginDto implements ILoginDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
+            this.password = _data["password"] !== undefined ? _data["password"] : null as any;
         }
     }
 
@@ -1107,11 +1233,17 @@ export class LoginDto implements ILoginDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["phone"] = this.phone !== undefined ? this.phone : null as any;
+        data["password"] = this.password !== undefined ? this.password : null as any;
         return data;
     }
 }
 
 export interface ILoginDto {
+    /** شماره موبایل */
+    phone: string;
+    /** رمز عبور */
+    password: string;
 
     [key: string]: any;
 }
@@ -1171,10 +1303,11 @@ export interface ILoginResponseDto {
 export class BusinessResponseDto implements IBusinessResponseDto {
     id!: string;
     name!: string;
-    city?: string;
-    phone?: string;
-    address?: string;
-    description?: string;
+    category!: string;
+    city!: string;
+    phone!: string;
+    address?: string | null;
+    description?: string | null;
     slug!: string;
     createdAt!: string;
     updatedAt!: string;
@@ -1198,6 +1331,7 @@ export class BusinessResponseDto implements IBusinessResponseDto {
             }
             this.id = _data["id"] !== undefined ? _data["id"] : null as any;
             this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.category = _data["category"] !== undefined ? _data["category"] : null as any;
             this.city = _data["city"] !== undefined ? _data["city"] : null as any;
             this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
             this.address = _data["address"] !== undefined ? _data["address"] : null as any;
@@ -1223,6 +1357,7 @@ export class BusinessResponseDto implements IBusinessResponseDto {
         }
         data["id"] = this.id !== undefined ? this.id : null as any;
         data["name"] = this.name !== undefined ? this.name : null as any;
+        data["category"] = this.category !== undefined ? this.category : null as any;
         data["city"] = this.city !== undefined ? this.city : null as any;
         data["phone"] = this.phone !== undefined ? this.phone : null as any;
         data["address"] = this.address !== undefined ? this.address : null as any;
@@ -1237,10 +1372,11 @@ export class BusinessResponseDto implements IBusinessResponseDto {
 export interface IBusinessResponseDto {
     id: string;
     name: string;
-    city?: string;
-    phone?: string;
-    address?: string;
-    description?: string;
+    category: string;
+    city: string;
+    phone: string;
+    address?: string | null;
+    description?: string | null;
     slug: string;
     createdAt: string;
     updatedAt: string;
@@ -1249,6 +1385,20 @@ export interface IBusinessResponseDto {
 }
 
 export class UpdateBusinessDto implements IUpdateBusinessDto {
+    /** نام کسب‌وکار */
+    name?: string;
+    /** دسته‌بندی کسب‌وکار */
+    category?: string;
+    /** شهر */
+    city?: string;
+    /** آدرس */
+    address?: string;
+    /** شماره موبایل */
+    phone?: string;
+    /** توضیحات */
+    description?: string;
+    /** آدرس صفحه‌ی رزرو */
+    slug?: string;
 
     [key: string]: any;
 
@@ -1267,6 +1417,13 @@ export class UpdateBusinessDto implements IUpdateBusinessDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.category = _data["category"] !== undefined ? _data["category"] : null as any;
+            this.city = _data["city"] !== undefined ? _data["city"] : null as any;
+            this.address = _data["address"] !== undefined ? _data["address"] : null as any;
+            this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
+            this.description = _data["description"] !== undefined ? _data["description"] : null as any;
+            this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
         }
     }
 
@@ -1283,26 +1440,45 @@ export class UpdateBusinessDto implements IUpdateBusinessDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["category"] = this.category !== undefined ? this.category : null as any;
+        data["city"] = this.city !== undefined ? this.city : null as any;
+        data["address"] = this.address !== undefined ? this.address : null as any;
+        data["phone"] = this.phone !== undefined ? this.phone : null as any;
+        data["description"] = this.description !== undefined ? this.description : null as any;
+        data["slug"] = this.slug !== undefined ? this.slug : null as any;
         return data;
     }
 }
 
 export interface IUpdateBusinessDto {
+    /** نام کسب‌وکار */
+    name?: string;
+    /** دسته‌بندی کسب‌وکار */
+    category?: string;
+    /** شهر */
+    city?: string;
+    /** آدرس */
+    address?: string;
+    /** شماره موبایل */
+    phone?: string;
+    /** توضیحات */
+    description?: string;
+    /** آدرس صفحه‌ی رزرو */
+    slug?: string;
 
     [key: string]: any;
 }
 
-export class PublicBusinessResponseDto implements IPublicBusinessResponseDto {
+export class PublicServiceDto implements IPublicServiceDto {
+    id!: string;
     name!: string;
-    city?: string;
-    phone?: string;
-    address?: string;
-    description?: string;
-    slug!: string;
+    priceToman!: number;
+    durationMin!: number;
 
     [key: string]: any;
 
-    constructor(data?: IPublicBusinessResponseDto) {
+    constructor(data?: IPublicServiceDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1317,12 +1493,158 @@ export class PublicBusinessResponseDto implements IPublicBusinessResponseDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
             this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.durationMin = _data["durationMin"] !== undefined ? _data["durationMin"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): PublicServiceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PublicServiceDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["durationMin"] = this.durationMin !== undefined ? this.durationMin : null as any;
+        return data;
+    }
+}
+
+export interface IPublicServiceDto {
+    id: string;
+    name: string;
+    priceToman: number;
+    durationMin: number;
+
+    [key: string]: any;
+}
+
+export class WorkingHourItemDto implements IWorkingHourItemDto {
+    weekday!: number;
+    isOpen!: boolean;
+    opensAt!: string;
+    closesAt!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IWorkingHourItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.weekday = _data["weekday"] !== undefined ? _data["weekday"] : null as any;
+            this.isOpen = _data["isOpen"] !== undefined ? _data["isOpen"] : null as any;
+            this.opensAt = _data["opensAt"] !== undefined ? _data["opensAt"] : null as any;
+            this.closesAt = _data["closesAt"] !== undefined ? _data["closesAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): WorkingHourItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkingHourItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["weekday"] = this.weekday !== undefined ? this.weekday : null as any;
+        data["isOpen"] = this.isOpen !== undefined ? this.isOpen : null as any;
+        data["opensAt"] = this.opensAt !== undefined ? this.opensAt : null as any;
+        data["closesAt"] = this.closesAt !== undefined ? this.closesAt : null as any;
+        return data;
+    }
+}
+
+export interface IWorkingHourItemDto {
+    weekday: number;
+    isOpen: boolean;
+    opensAt: string;
+    closesAt: string;
+
+    [key: string]: any;
+}
+
+export class PublicBusinessResponseDto implements IPublicBusinessResponseDto {
+    name!: string;
+    category!: string;
+    city!: string;
+    phone!: string;
+    address?: string | null;
+    description?: string | null;
+    slug!: string;
+    services!: PublicServiceDto[];
+    hours!: WorkingHourItemDto[];
+
+    [key: string]: any;
+
+    constructor(data?: IPublicBusinessResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.services = [];
+            this.hours = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.category = _data["category"] !== undefined ? _data["category"] : null as any;
             this.city = _data["city"] !== undefined ? _data["city"] : null as any;
             this.phone = _data["phone"] !== undefined ? _data["phone"] : null as any;
             this.address = _data["address"] !== undefined ? _data["address"] : null as any;
             this.description = _data["description"] !== undefined ? _data["description"] : null as any;
             this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
+            if (Array.isArray(_data["services"])) {
+                this.services = [] as any;
+                for (let item of _data["services"])
+                    this.services!.push(PublicServiceDto.fromJS(item));
+            }
+            else {
+                this.services = null as any;
+            }
+            if (Array.isArray(_data["hours"])) {
+                this.hours = [] as any;
+                for (let item of _data["hours"])
+                    this.hours!.push(WorkingHourItemDto.fromJS(item));
+            }
+            else {
+                this.hours = null as any;
+            }
         }
     }
 
@@ -1340,27 +1662,127 @@ export class PublicBusinessResponseDto implements IPublicBusinessResponseDto {
                 data[property] = this[property];
         }
         data["name"] = this.name !== undefined ? this.name : null as any;
+        data["category"] = this.category !== undefined ? this.category : null as any;
         data["city"] = this.city !== undefined ? this.city : null as any;
         data["phone"] = this.phone !== undefined ? this.phone : null as any;
         data["address"] = this.address !== undefined ? this.address : null as any;
         data["description"] = this.description !== undefined ? this.description : null as any;
         data["slug"] = this.slug !== undefined ? this.slug : null as any;
+        if (Array.isArray(this.services)) {
+            data["services"] = [];
+            for (let item of this.services)
+                data["services"].push(item ? item.toJSON() : null as any);
+        }
+        if (Array.isArray(this.hours)) {
+            data["hours"] = [];
+            for (let item of this.hours)
+                data["hours"].push(item ? item.toJSON() : null as any);
+        }
         return data;
     }
 }
 
 export interface IPublicBusinessResponseDto {
     name: string;
-    city?: string;
-    phone?: string;
-    address?: string;
-    description?: string;
+    category: string;
+    city: string;
+    phone: string;
+    address?: string | null;
+    description?: string | null;
     slug: string;
+    services: PublicServiceDto[];
+    hours: WorkingHourItemDto[];
+
+    [key: string]: any;
+}
+
+export class ServiceResponseDto implements IServiceResponseDto {
+    id!: string;
+    businessId!: string;
+    name!: string;
+    /** قیمت به تومان */
+    priceToman!: number;
+    /** مدت زمان به دقیقه */
+    durationMin!: number;
+    isActive!: boolean;
+    createdAt!: string;
+    updatedAt!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IServiceResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"] !== undefined ? _data["id"] : null as any;
+            this.businessId = _data["businessId"] !== undefined ? _data["businessId"] : null as any;
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.durationMin = _data["durationMin"] !== undefined ? _data["durationMin"] : null as any;
+            this.isActive = _data["isActive"] !== undefined ? _data["isActive"] : null as any;
+            this.createdAt = _data["createdAt"] !== undefined ? _data["createdAt"] : null as any;
+            this.updatedAt = _data["updatedAt"] !== undefined ? _data["updatedAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): ServiceResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ServiceResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id !== undefined ? this.id : null as any;
+        data["businessId"] = this.businessId !== undefined ? this.businessId : null as any;
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["durationMin"] = this.durationMin !== undefined ? this.durationMin : null as any;
+        data["isActive"] = this.isActive !== undefined ? this.isActive : null as any;
+        data["createdAt"] = this.createdAt !== undefined ? this.createdAt : null as any;
+        data["updatedAt"] = this.updatedAt !== undefined ? this.updatedAt : null as any;
+        return data;
+    }
+}
+
+export interface IServiceResponseDto {
+    id: string;
+    businessId: string;
+    name: string;
+    /** قیمت به تومان */
+    priceToman: number;
+    /** مدت زمان به دقیقه */
+    durationMin: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 
     [key: string]: any;
 }
 
 export class CreateServiceDto implements ICreateServiceDto {
+    /** نام خدمت */
+    name!: string;
+    /** قیمت به تومان */
+    priceToman!: number;
+    /** مدت زمان به دقیقه */
+    durationMin!: number;
 
     [key: string]: any;
 
@@ -1379,6 +1801,9 @@ export class CreateServiceDto implements ICreateServiceDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.durationMin = _data["durationMin"] !== undefined ? _data["durationMin"] : null as any;
         }
     }
 
@@ -1395,16 +1820,33 @@ export class CreateServiceDto implements ICreateServiceDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["durationMin"] = this.durationMin !== undefined ? this.durationMin : null as any;
         return data;
     }
 }
 
 export interface ICreateServiceDto {
+    /** نام خدمت */
+    name: string;
+    /** قیمت به تومان */
+    priceToman: number;
+    /** مدت زمان به دقیقه */
+    durationMin: number;
 
     [key: string]: any;
 }
 
 export class UpdateServiceDto implements IUpdateServiceDto {
+    /** نام خدمت */
+    name?: string;
+    /** قیمت به تومان */
+    priceToman?: number;
+    /** مدت زمان به دقیقه */
+    durationMin?: number;
+    /** فعال یا غیرفعال بودن خدمت */
+    isActive?: boolean;
 
     [key: string]: any;
 
@@ -1423,6 +1865,10 @@ export class UpdateServiceDto implements IUpdateServiceDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.name = _data["name"] !== undefined ? _data["name"] : null as any;
+            this.priceToman = _data["priceToman"] !== undefined ? _data["priceToman"] : null as any;
+            this.durationMin = _data["durationMin"] !== undefined ? _data["durationMin"] : null as any;
+            this.isActive = _data["isActive"] !== undefined ? _data["isActive"] : null as any;
         }
     }
 
@@ -1439,20 +1885,37 @@ export class UpdateServiceDto implements IUpdateServiceDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["name"] = this.name !== undefined ? this.name : null as any;
+        data["priceToman"] = this.priceToman !== undefined ? this.priceToman : null as any;
+        data["durationMin"] = this.durationMin !== undefined ? this.durationMin : null as any;
+        data["isActive"] = this.isActive !== undefined ? this.isActive : null as any;
         return data;
     }
 }
 
 export interface IUpdateServiceDto {
+    /** نام خدمت */
+    name?: string;
+    /** قیمت به تومان */
+    priceToman?: number;
+    /** مدت زمان به دقیقه */
+    durationMin?: number;
+    /** فعال یا غیرفعال بودن خدمت */
+    isActive?: boolean;
 
     [key: string]: any;
 }
 
-export class WorkingHoursDto implements IWorkingHoursDto {
+export class HourDto implements IHourDto {
+    /** 0 = Saturday ... 6 = Friday */
+    weekday!: number;
+    isOpen!: boolean;
+    opensAt!: string;
+    closesAt!: string;
 
     [key: string]: any;
 
-    constructor(data?: IWorkingHoursDto) {
+    constructor(data?: IHourDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1466,6 +1929,75 @@ export class WorkingHoursDto implements IWorkingHoursDto {
             for (var property in _data) {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
+            }
+            this.weekday = _data["weekday"] !== undefined ? _data["weekday"] : null as any;
+            this.isOpen = _data["isOpen"] !== undefined ? _data["isOpen"] : null as any;
+            this.opensAt = _data["opensAt"] !== undefined ? _data["opensAt"] : null as any;
+            this.closesAt = _data["closesAt"] !== undefined ? _data["closesAt"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): HourDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new HourDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["weekday"] = this.weekday !== undefined ? this.weekday : null as any;
+        data["isOpen"] = this.isOpen !== undefined ? this.isOpen : null as any;
+        data["opensAt"] = this.opensAt !== undefined ? this.opensAt : null as any;
+        data["closesAt"] = this.closesAt !== undefined ? this.closesAt : null as any;
+        return data;
+    }
+}
+
+export interface IHourDto {
+    /** 0 = Saturday ... 6 = Friday */
+    weekday: number;
+    isOpen: boolean;
+    opensAt: string;
+    closesAt: string;
+
+    [key: string]: any;
+}
+
+export class WorkingHoursDto implements IWorkingHoursDto {
+    days!: HourDto[];
+
+    [key: string]: any;
+
+    constructor(data?: IWorkingHoursDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.days = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["days"])) {
+                this.days = [] as any;
+                for (let item of _data["days"])
+                    this.days!.push(HourDto.fromJS(item));
+            }
+            else {
+                this.days = null as any;
             }
         }
     }
@@ -1483,11 +2015,17 @@ export class WorkingHoursDto implements IWorkingHoursDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        if (Array.isArray(this.days)) {
+            data["days"] = [];
+            for (let item of this.days)
+                data["days"].push(item ? item.toJSON() : null as any);
+        }
         return data;
     }
 }
 
 export interface IWorkingHoursDto {
+    days: HourDto[];
 
     [key: string]: any;
 }
@@ -1586,7 +2124,7 @@ export class BookingDetailsDto implements IBookingDetailsDto {
     endsAt!: string;
     createdAt!: string;
     updatedAt!: string;
-    service?: any;
+    service!: ServiceResponseDto;
 
     [key: string]: any;
 
@@ -1596,6 +2134,9 @@ export class BookingDetailsDto implements IBookingDetailsDto {
                 if (data.hasOwnProperty(property))
                     (this as any)[property] = (data as any)[property];
             }
+        }
+        if (!data) {
+            this.service = new ServiceResponseDto();
         }
     }
 
@@ -1618,7 +2159,7 @@ export class BookingDetailsDto implements IBookingDetailsDto {
             this.endsAt = _data["endsAt"] !== undefined ? _data["endsAt"] : null as any;
             this.createdAt = _data["createdAt"] !== undefined ? _data["createdAt"] : null as any;
             this.updatedAt = _data["updatedAt"] !== undefined ? _data["updatedAt"] : null as any;
-            this.service = _data["service"] !== undefined ? _data["service"] : null as any;
+            this.service = _data["service"] ? ServiceResponseDto.fromJS(_data["service"]) : new ServiceResponseDto();
         }
     }
 
@@ -1648,7 +2189,7 @@ export class BookingDetailsDto implements IBookingDetailsDto {
         data["endsAt"] = this.endsAt !== undefined ? this.endsAt : null as any;
         data["createdAt"] = this.createdAt !== undefined ? this.createdAt : null as any;
         data["updatedAt"] = this.updatedAt !== undefined ? this.updatedAt : null as any;
-        data["service"] = this.service !== undefined ? this.service : null as any;
+        data["service"] = this.service ? this.service.toJSON() : null as any;
         return data;
     }
 }
@@ -1667,7 +2208,7 @@ export interface IBookingDetailsDto {
     endsAt: string;
     createdAt: string;
     updatedAt: string;
-    service?: any;
+    service: ServiceResponseDto;
 
     [key: string]: any;
 }
@@ -1843,6 +2384,14 @@ export interface IAvailabilityResponseDto {
 }
 
 export class BookingRequestDto implements IBookingRequestDto {
+    /** شناسه‌ی خدمت */
+    serviceId!: string;
+    /** زمان شروع نوبت (ISO 8601) */
+    startsAt!: string;
+    /** نام مشتری */
+    customerName!: string;
+    /** شماره موبایل مشتری */
+    customerPhone!: string;
 
     [key: string]: any;
 
@@ -1861,6 +2410,10 @@ export class BookingRequestDto implements IBookingRequestDto {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.serviceId = _data["serviceId"] !== undefined ? _data["serviceId"] : null as any;
+            this.startsAt = _data["startsAt"] !== undefined ? _data["startsAt"] : null as any;
+            this.customerName = _data["customerName"] !== undefined ? _data["customerName"] : null as any;
+            this.customerPhone = _data["customerPhone"] !== undefined ? _data["customerPhone"] : null as any;
         }
     }
 
@@ -1877,11 +2430,23 @@ export class BookingRequestDto implements IBookingRequestDto {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["serviceId"] = this.serviceId !== undefined ? this.serviceId : null as any;
+        data["startsAt"] = this.startsAt !== undefined ? this.startsAt : null as any;
+        data["customerName"] = this.customerName !== undefined ? this.customerName : null as any;
+        data["customerPhone"] = this.customerPhone !== undefined ? this.customerPhone : null as any;
         return data;
     }
 }
 
 export interface IBookingRequestDto {
+    /** شناسه‌ی خدمت */
+    serviceId: string;
+    /** زمان شروع نوبت (ISO 8601) */
+    startsAt: string;
+    /** نام مشتری */
+    customerName: string;
+    /** شماره موبایل مشتری */
+    customerPhone: string;
 
     [key: string]: any;
 }
@@ -1956,6 +2521,12 @@ export interface IBookingViewDto {
     endsAt: string;
 
     [key: string]: any;
+}
+
+export enum Status {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
 }
 
 export enum BookingListItemDtoStatus {

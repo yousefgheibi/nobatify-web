@@ -1,21 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthControllerClient, LoginDto } from '../../../api/service-proxies';
 import { SessionService } from '../../../core/services/session.service';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { finalize } from 'rxjs';
+import { AuthControllerService, LoginDto } from '../../../api/service-proxies';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink, InputComponent],
   selector: 'app-login',
   styleUrl: './login.component.scss',
   templateUrl: './login.component.html',
-  providers: [AuthControllerClient]
+  providers: [AuthControllerService]
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly auth = inject(AuthControllerClient);
+  private readonly auth = inject(AuthControllerService);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
@@ -32,7 +32,10 @@ export class LoginComponent {
       return;
     }
     this.submitting.set(true);
-    this.auth.login(this.form.getRawValue() as any as LoginDto)
+    const body = new LoginDto({
+      ...this.form.getRawValue()
+    })
+    this.auth.login(body)
     .pipe(finalize(()=> this.submitting.set(false))).subscribe({
       next: (res: any) => {
         console.log('LOGIN RESPONSE >>>', res);

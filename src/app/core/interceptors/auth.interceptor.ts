@@ -8,13 +8,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const apiBase = inject(API_BASE_URL);
   const token = session.token;
 
-  console.log('[authInterceptor]', {
-    url: req.url,
-    apiBase,
-    token,
-    matches: req.url.startsWith(apiBase),
-  });
-
   if (!token || !req.url.startsWith(apiBase)) {
     return next(req);
   }

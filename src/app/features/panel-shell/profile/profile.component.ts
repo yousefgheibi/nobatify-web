@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BusinessControllerClient, UpdateBusinessDto } from '../../../api/service-proxies';
+import { BusinessControllerService, UpdateBusinessDto } from '../../../api/service-proxies';
 import { NotificationService } from '../../../core/services/notification.service';
 import { SLUG_PATTERN } from '../../../shared/global.config';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,12 +11,12 @@ import { InputComponent } from '../../../shared/ui/input/input.component';
   selector: 'app-profile',
   styleUrl: './profile.component.scss',
   templateUrl: './profile.component.html',
-  providers: [BusinessControllerClient]
+  providers: [BusinessControllerService]
 })
 export class ProfileComponent {
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly api = inject(BusinessControllerClient);
+  private readonly api = inject(BusinessControllerService);
   private readonly notification = inject(NotificationService);
 
   protected readonly saving = signal(false);
@@ -74,9 +74,12 @@ export class ProfileComponent {
     }
 
     this.saving.set(false);
-    const formValue = this.form.getRawValue();
+    const body = new UpdateBusinessDto({
+      ...this.form.getRawValue(),
+      category: 'test'
+    })
     this.api
-      .updateMyBusiness(formValue as any as UpdateBusinessDto)
+      .updateMyBusiness(body)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
       next: (b) => {

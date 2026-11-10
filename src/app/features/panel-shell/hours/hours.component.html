@@ -1,1 +1,42 @@
-<p>hours works!</p>
+<main class="page">
+  <h1 class="fs-20 mb-1">ساعت کاری</h1>
+  <p class="text-body-secondary mb-4">روزهایی که باز هستید را فعال کنید و ساعت کار را مشخص کنید.</p>
+
+  <div class="row g-3">
+    @for (g of days.controls; track $index; let i = $index) {
+      <div class="col-12 col-md-6">
+        <section class="card h-100 p-3 rounded-4" [class.opacity-50]="!g.controls.isOpen.value" [formGroup]="g">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="fw-semibold">{{ names[i] }}</span>
+
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" [id]="'open-' + i" formControlName="isOpen" />
+                <label class="form-check-label" [attr.for]="'open-' + i">
+                  {{ g.controls.isOpen.value ? 'باز' : 'تعطیل' }}
+                </label>
+              </div>
+            </div>
+
+            @if (g.controls.isOpen.value) {
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small" [attr.for]="'start-' + i">شروع</label>
+                  <input class="form-control" type="time" [id]="'start-' + i" formControlName="opensAt" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label small" [attr.for]="'end-' + i">پایان</label>
+                  <input class="form-control" type="time" [id]="'end-' + i" formControlName="closesAt" />
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    }
+  </div>
+
+  <button type="button" class="btn btn-primary w-100 mt-4" [disabled]="saving()" (click)="save()">
+    {{ saving() ? 'در حال ذخیره…' : 'ذخیره ساعت‌های کاری' }}
+  </button>
+</main>

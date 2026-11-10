@@ -7,3 +7,5 @@ export const BUSINESS_CATEGORIES = [
   'کلینیک',
   'سایر',
 ];
+
+export const WEEKDAY_NAMES = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
