@@ -31,6 +31,10 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./features/panel-shell/profile/profile.component').then((m) => m.ProfileComponent)
+      },
+      {
+        path: 'services',
+        loadComponent: () => import('./features/panel-shell/services/services.component').then((m) => m.ServicesComponent)
       }
     ]
   },

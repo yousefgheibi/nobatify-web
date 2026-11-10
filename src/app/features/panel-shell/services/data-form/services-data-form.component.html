@@ -1,0 +1,35 @@
+<form class="card rounded-4" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fs-18 mb-0">{{ service() ? 'ویرایش خدمت' : 'خدمت جدید' }}</h2>
+      <button type="button" class="btn btn-link p-0 text-decoration-none" (click)="closed.emit()">بستن</button>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="service-name">نام خدمت</label>
+      <input id="service-name" class="form-control" type="text" formControlName="name" />
+    </div>
+
+    <div class="row g-2 mb-3">
+      <div class="col-6">
+        <label class="form-label" for="service-price">قیمت (تومان)</label>
+        <input id="service-price" class="form-control" type="number" inputmode="numeric" min="0" formControlName="priceToman" />
+      </div>
+      <div class="col-6">
+        <label class="form-label" for="service-duration">مدت (دقیقه)</label>
+        <input id="service-duration" class="form-control" type="number" inputmode="numeric" min="5" max="600" step="5" formControlName="durationMin" />
+      </div>
+    </div>
+
+    @if (service()) {
+      <div class="form-check form-switch mb-3">
+        <input id="service-active" class="form-check-input" type="checkbox" formControlName="isActive" />
+        <label class="form-check-label" for="service-active">نمایش در صفحه‌ی رزرو</label>
+      </div>
+    }
+
+    <button type="submit" class="btn btn-primary w-100" [disabled]="saving()">
+      {{ saving() ? 'در حال ذخیره…' : 'ذخیره' }}
+    </button>
+  </div>
+</form>
