@@ -1,1 +1,42 @@
-<p>bookings works!</p>
+<main class="page py-4">
+  <section class="row g-3 align-items-end mb-4">
+    <div class="col-12">
+      <app-date-input [formControl]="dateControl" label="تاریخ" />
+    </div>
+
+    <div class="col-12">
+      <label class="form-label fw-semibold d-block">وضعیت</label>
+      <div class="btn-group flex-wrap" role="tablist" aria-label="فیلتر وضعیت">
+        @for (f of filters; track f.value) {
+        <button type="button" role="tab" class="btn btn-outline-secondary btn-sm rounded-pill px-3 me-2 mb-2"
+          [class.active]="filter() === f.value" [class.btn-secondary]="filter() === f.value"
+          [attr.aria-selected]="filter() === f.value" (click)="setFilter(f.value)">
+          {{ f.label }}
+        </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (loading() && items().length === 0) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-secondary" role="status">
+      <span class="visually-hidden">در حال بارگذاری…</span>
+    </div>
+  </div>
+  } @else if (items().length === 0) {
+  <div class="text-center text-muted py-5">
+    <p class="mb-1 fw-semibold">نوبتی برای این روز نیست.</p>
+    <p class="small mb-0">تاریخ یا فیلتر را تغییر دهید.</p>
+  </div>
+  }
+
+  <div class="row g-3">
+    @for (b of items(); track b.id) {
+    <div class="col-12 col-lg-6 col-xl-4">
+      <app-booking-card [booking]="b" [busy]="busyId() === b.id" (confirm)="confirm($event)"
+        (cancel)="cancel($event)" />
+    </div>
+    }
+  </div>
+</main>

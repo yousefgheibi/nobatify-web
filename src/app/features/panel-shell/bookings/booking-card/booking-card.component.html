@@ -1,0 +1,32 @@
+<article class="card mb-3 shadow-sm border-0">
+  <header class="card-header bg-transparent d-flex justify-content-between align-items-center py-2">
+    <span class="text-muted small">{{ time(booking().startsAt) }}</span>
+  </header>
+
+  <div class="card-body py-3">
+    <h6 class="card-title mb-1 fw-bold">{{ booking().customerName }}</h6>
+    <a class="d-block text-decoration-none mb-1" [href]="'tel:' + booking().customerPhone" dir="ltr">
+      {{ booking().customerPhone }}
+    </a>
+    <p class="card-text text-muted small mb-0">
+      {{ booking().serviceName }} · {{ toman(booking().priceToman) }}
+    </p>
+  </div>
+
+  @if (booking().status === 'PENDING') {
+    <div class="card-footer bg-transparent d-flex gap-2 py-3">
+      <button type="button" class="btn btn-primary flex-fill" [disabled]="busy()" (click)="confirm.emit(booking())">
+        تأیید
+      </button>
+      <button type="button" class="btn btn-danger flex-fill" [disabled]="busy()" (click)="cancel.emit(booking())">
+        رد کردن
+      </button>
+    </div>
+  } @else if (booking().status === 'CONFIRMED') {
+    <div class="card-footer bg-transparent d-flex py-3">
+      <button type="button" class="btn btn-danger w-100" [disabled]="busy()" (click)="cancel.emit(booking())">
+        لغو نوبت
+      </button>
+    </div>
+  }
+</article>
